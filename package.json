@@ -2,10 +2,11 @@
   "name": "piggle",
   "version": "0.1.2",
   "description": "A library for processing generator javascript functions with automatic retries on transitory failures.",
+  "type": "module",
   "main": "./index.js",
   "exports": "./index.js",
   "scripts": {
-    "test": "jest && standard",
+    "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js && standard",
     "reinstall": "rm -rf node_modules && npm install"
   },
   "repository": {
