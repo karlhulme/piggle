@@ -44,7 +44,7 @@ export async function executeOperation (operationFunc, options = {}) {
       // if the output has changed then we must save now before any other processing
       //  including the operation code that appears between the yields or after the
       //  final yield but before the end of the operation.
-      if (newOutput !== output) {
+      if (newOutput && newOutput !== output) {
         await invokeOnSave(options.onSave, newOutput, true)
         output = newOutput
       }
