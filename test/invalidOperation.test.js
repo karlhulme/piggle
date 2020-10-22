@@ -12,5 +12,5 @@ test('An empty operation completes successfully.', async () => {
 
   await expect(executeOperation(operation, options)).resolves.toEqual(false)
 
-  expect(JSON.stringify(options.onLog.mock.calls)).toMatch(/Unrecognised object yielded/)
+  expect(JSON.stringify(options.onLog.mock.calls)).toMatch(/not have a recognised type property/)
 })

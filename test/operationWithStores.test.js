@@ -15,17 +15,14 @@ test('An operation with stores will complete successfully.', async () => {
   expect(options.onSave).toHaveBeenCalledTimes(3)
   expect(options.onSave).toHaveBeenNthCalledWith(
     1,
-    { A: { type: 'STORE_STEP', data: { foo: 'bar' } } },
-    expect.anything() // jest stores a ref to the output variable, so this will be the final output, not the output at that stage.
+    { A: { type: 'STORE_STEP', data: { foo: 'bar' } } }
   )
   expect(options.onSave).toHaveBeenNthCalledWith(
     2,
-    { B: { type: 'STORE_STEP', data: { hello: 'world' } } },
     { A: { type: 'STORE_STEP', data: { foo: 'bar' } }, B: { type: 'STORE_STEP', data: { hello: 'world' } } }
   )
   expect(options.onSave).toHaveBeenNthCalledWith(
     3,
-    {},
     { A: { type: 'STORE_STEP', data: { foo: 'bar' } }, B: { type: 'STORE_STEP', data: { hello: 'world' } } }
   )
 })

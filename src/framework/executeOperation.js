@@ -1,8 +1,6 @@
-import { executeCall } from './executeCall.js'
-import { invokeOnLog } from './invokeOnLog.js'
-import { invokeOnSave } from './invokeOnSave.js'
 import { CALL_STEP, WAIT_STEP, STORE_STEP, LOG_STEP } from '../yields'
-import { pause } from './pause.js'
+import { invokeOnLog, invokeOnSave } from '../utils/index.js'
+import { executeCallStep, executeLogStep, executeStoreStep, executeWaitStep } from '../steps/index.js'
 
 /**
  * @callback OperationFunction
@@ -21,6 +19,16 @@ import { pause } from './pause.js'
  * Implementors should typically cache this information and wait for the next save event.
  */
 
+function getExecutorForStepType (step) {
+  switch (step.type) {
+    case CALL_STEP: return executeCallStep
+    case STORE_STEP: return executeStoreStep
+    case LOG_STEP: return executeLogStep
+    case WAIT_STEP: return executeWaitStep
+    default: throw new Error(`Object yielded from operation did not have a recognised type property.\n${JSON.stringify(step)}`)
+  }
+}
+
 /**
  * Executes the operation and returns a status code to indicate the result.
  * The operation should be a generator function that yields steps.
@@ -34,7 +42,7 @@ import { pause } from './pause.js'
  */
 export async function executeOperation (operationFunc, options = {}) {
   const input = options.input || {}
-  const output = options.output || {}
+  let output = options.output || {}
 
   const operation = operationFunc(input, output)
 
@@ -42,51 +50,22 @@ export async function executeOperation (operationFunc, options = {}) {
 
   try {
     for (const step of operation) {
-      if (step.type === CALL_STEP) {
-        const stepName = step.name
+      const stepExecutor = getExecutorForStepType(step)
+      const newOutput = await stepExecutor(step, output, options)
 
-        if (typeof output[stepName] === 'undefined') {
-          await invokeOnLog(options.onLog, `Started call step '${stepName}'.`)
-
-          const stepOutput = await executeCall(step)
-
-          if (stepOutput.complete) {
-            await invokeOnLog(options.onLog, `Finished call step '${stepName}'.`)
-            const stepValue = { type: CALL_STEP, data: stepOutput.data }
-            output[step.name] = stepValue
-            await invokeOnSave(options.onSave, { [step.name]: stepValue }, output)
-          } else {
-            await invokeOnLog(options.onLog, `Error within call step '${stepName}'.\n${stepOutput.errorMessage}`)
-            await invokeOnLog(options.onLog, 'Operation stalled.')
-            return false
-          }
-        } else {
-          await invokeOnLog(options.onLog, `Skipping call step '${stepName}'.`)
-        }
-      } else if (step.type === STORE_STEP) {
-        if (typeof output[step.name] === 'undefined') {
-          await invokeOnLog(options.onLog, `Performing store step '${step.name}'.`)
-          const stepValue = { type: STORE_STEP, data: step.data }
-          output[step.name] = stepValue
-          await invokeOnSave(options.onSave, { [step.name]: stepValue }, output)
-        } else {
-          await invokeOnLog(options.onLog, `Skipping store step '${step.name}'.`)
-        }
-      } else if (step.type === LOG_STEP) {
-        await invokeOnLog(options.onLog, step.message)
-      } else if (step.type === WAIT_STEP) {
-        await pause(step.milliseconds)
-      } else {
-        throw new Error('Unrecognised object yielded from operation.')
+      // do not trigger if this is the last step save
+      if (newOutput !== output) {
+        await invokeOnSave(options.onSave, newOutput)
+        output = newOutput
       }
     }
 
     await invokeOnLog(options.onLog, 'Operation completed.')
-    await invokeOnSave(options.onSave, {}, output)
+    await invokeOnSave(options.onSave, output)
     return true
   } catch (err) {
-    await invokeOnLog(options.onLog, `Error within operation.\n${err.toString()}`)
-    await invokeOnSave(options.onSave, {}, output)
+    await invokeOnLog(options.onLog, `Operation failed.\n${err.toString()}`)
+    await invokeOnSave(options.onSave, output)
     return false
   }
 }
