@@ -1,3 +1,5 @@
+import { SaveCallbackError } from '../errors/index.js'
+
 /**
  * @callback OnSaveCallback
  * @param {Object} output The full output updated to reflect the recently completed step.
@@ -11,6 +13,10 @@
  */
 export async function invokeOnSave (onSave, output) {
   if (onSave) {
-    await onSave(output)
+    try {
+      await onSave(output)
+    } catch (err) {
+      throw new SaveCallbackError(`Error raised by handler for onSave event.\n${err.toString()}`)
+    }
   }
 }

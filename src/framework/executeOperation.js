@@ -33,36 +33,28 @@ export async function executeOperation (operationFunc, options = {}) {
   const input = options.input || {}
   let output = options.output || {}
 
-  await invokeOnLog(options.onLog, 'Operation started.')
-
-  const operation = operationFunc(input, output)
-
   try {
-    let lastYield = operation.next()
+    await invokeOnLog(options.onLog, 'Operation started.')
+    const operation = operationFunc(input, output)
 
-    while (!lastYield.done) {
-      const step = lastYield.value
+    for (const step of operation) {
       const stepExecutor = getExecutorForStepType(step)
       const newOutput = await stepExecutor(step, output, options)
 
-      lastYield = operation.next()
-
-      // do not trigger if this is the last step save,
-      //  because save after last step we'll add some
-      //  final logs and save anyway
-      if (newOutput !== output && !lastYield.done) {
-        await invokeOnSave(options.onSave, newOutput)
+      // if the output has changed then we must save now before any other processing
+      //  including the operation code that appears between the yields or after the
+      //  final yield but before the end of the operation.
+      if (newOutput !== output) {
+        await invokeOnSave(options.onSave, newOutput, true)
       }
 
       output = newOutput
     }
+
+    await invokeOnLog(options.onLog, 'Operation completed.')
+    return true
   } catch (err) {
     await invokeOnLog(options.onLog, `Operation failed.\n${err.toString()}`)
-    await invokeOnSave(options.onSave, output)
     return false
   }
-
-  await invokeOnLog(options.onLog, 'Operation completed.')
-  await invokeOnSave(options.onSave, output)
-  return true
 }

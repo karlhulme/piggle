@@ -60,7 +60,7 @@ test('An operation with a call to a failing promise does not complete.', async (
   }
 
   await expect(executeOperation(operation, options)).resolves.toEqual(false)
-  expect(options.onSave).toHaveBeenCalledTimes(1)
+  expect(options.onSave).toHaveBeenCalledTimes(0)
 })
 
 test('An operation with calls to a promise that throws transient errors will still complete successfully after retries.', async () => {
@@ -104,8 +104,7 @@ test('An operation with calls to a promise that throws more transient errors tha
   expect(cb).toHaveBeenCalledTimes(4)
   expect(cb.mock.calls).toEqual([[false], [false], [false], [false]])
 
-  expect(options.onSave).toHaveBeenCalledTimes(1)
-  expect(options.onSave).toHaveBeenNthCalledWith(1, {})
+  expect(options.onSave).toHaveBeenCalledTimes(0)
 })
 
 test('An operation will skip previously completed call steps.', async () => {

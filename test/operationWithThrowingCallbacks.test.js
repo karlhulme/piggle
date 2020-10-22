@@ -1,7 +1,7 @@
-import { expect, test } from '@jest/globals'
+import { expect, jest, test } from '@jest/globals'
 import { executeOperation, log, store } from '../index.js'
 
-test('An operation with a throwing onLog callback will raise an error.', async () => {
+test('An operation with a throwing onLog callback will not raise an error.', async () => {
   const operation = function * (input, output) {
     yield log('a message')
   }
@@ -10,19 +10,20 @@ test('An operation with a throwing onLog callback will raise an error.', async (
     onLog: () => { throw new Error('unable to log') }
   }
 
-  await expect(executeOperation(operation, options)).rejects.toThrow(Error)
-  await expect(executeOperation(operation, options)).rejects.toThrow(/unable to log/)
+  await expect(executeOperation(operation, options)).resolves.toEqual(true)
 })
 
-test('An operation with a throwing onSave callback will raise an error.', async () => {
+test('An operation with a throwing onSave callback will be shown in the logs.', async () => {
   const operation = function * (input, output) {
     yield store('A', { foo: 'bar' })
   }
 
   const options = {
+    onLog: jest.fn(),
     onSave: () => { throw new Error('unable to save') }
   }
 
-  await expect(executeOperation(operation, options)).rejects.toThrow(Error)
-  await expect(executeOperation(operation, options)).rejects.toThrow(/unable to save/)
+  await expect(executeOperation(operation, options)).resolves.toEqual(false)
+  expect(JSON.stringify(options.onLog.mock.calls)).toMatch(/SaveCallbackError/)
+  expect(JSON.stringify(options.onLog.mock.calls)).toMatch(/unable to save/)
 })
