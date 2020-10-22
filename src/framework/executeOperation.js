@@ -30,6 +30,10 @@ import { getExecutorForStepType } from './getExecutorForStepType.js'
  * @returns {Promise<Boolean>}
  */
 export async function executeOperation (operationFunc, options = {}) {
+  if (typeof operationFunc !== 'function') {
+    throw new TypeError('First parameter should be a generator function.')
+  }
+
   const input = options.input || {}
   let output = options.output || {}
 
