@@ -46,9 +46,8 @@ export async function executeOperation (operationFunc, options = {}) {
       //  final yield but before the end of the operation.
       if (newOutput !== output) {
         await invokeOnSave(options.onSave, newOutput, true)
+        output = newOutput
       }
-
-      output = newOutput
     }
 
     await invokeOnLog(options.onLog, 'Operation completed.')
