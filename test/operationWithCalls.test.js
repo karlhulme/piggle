@@ -41,13 +41,9 @@ test('An operation with a call to a promise completes successfully and saves the
   }
 
   await expect(executeOperation(operation, options)).resolves.toEqual(true)
-  expect(options.onSave).toHaveBeenCalledTimes(2)
+  expect(options.onSave).toHaveBeenCalledTimes(1)
   expect(options.onSave).toHaveBeenNthCalledWith(
     1,
-    { A: { type: 'CALL_STEP', data: 5 } }
-  )
-  expect(options.onSave).toHaveBeenNthCalledWith(
-    2,
     { A: { type: 'CALL_STEP', data: 5 } }
   )
 })
@@ -81,13 +77,9 @@ test('An operation with calls to a promise that throws transient errors will sti
   expect(cb).toHaveBeenCalledTimes(4)
   expect(cb.mock.calls).toEqual([[false], [false], [false], [true]])
 
-  expect(options.onSave).toHaveBeenCalledTimes(2)
+  expect(options.onSave).toHaveBeenCalledTimes(1)
   expect(options.onSave).toHaveBeenNthCalledWith(
     1,
-    { A: { type: 'CALL_STEP', data: 'done' } }
-  )
-  expect(options.onSave).toHaveBeenNthCalledWith(
-    2,
     { A: { type: 'CALL_STEP', data: 'done' } }
   )
 })

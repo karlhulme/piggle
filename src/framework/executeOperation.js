@@ -44,28 +44,36 @@ export async function executeOperation (operationFunc, options = {}) {
   const input = options.input || {}
   let output = options.output || {}
 
-  const operation = operationFunc(input, output)
-
   await invokeOnLog(options.onLog, 'Operation started.')
 
+  const operation = operationFunc(input, output)
+
   try {
-    for (const step of operation) {
+    let lastYield = operation.next()
+
+    while (!lastYield.done) {
+      const step = lastYield.value
       const stepExecutor = getExecutorForStepType(step)
       const newOutput = await stepExecutor(step, output, options)
 
-      // do not trigger if this is the last step save
-      if (newOutput !== output) {
-        await invokeOnSave(options.onSave, newOutput)
-        output = newOutput
-      }
-    }
+      lastYield = operation.next()
 
-    await invokeOnLog(options.onLog, 'Operation completed.')
-    await invokeOnSave(options.onSave, output)
-    return true
+      // do not trigger if this is the last step save,
+      //  because save after last step we'll add some
+      //  final logs and save anyway
+      if (newOutput !== output && !lastYield.done) {
+        await invokeOnSave(options.onSave, newOutput)
+      }
+
+      output = newOutput
+    }
   } catch (err) {
     await invokeOnLog(options.onLog, `Operation failed.\n${err.toString()}`)
     await invokeOnSave(options.onSave, output)
     return false
   }
+
+  await invokeOnLog(options.onLog, 'Operation completed.')
+  await invokeOnSave(options.onSave, output)
+  return true
 }

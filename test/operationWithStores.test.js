@@ -12,17 +12,13 @@ test('An operation with stores will complete successfully.', async () => {
   }
 
   await expect(executeOperation(operation, options)).resolves.toEqual(true)
-  expect(options.onSave).toHaveBeenCalledTimes(3)
+  expect(options.onSave).toHaveBeenCalledTimes(2)
   expect(options.onSave).toHaveBeenNthCalledWith(
     1,
     { A: { type: 'STORE_STEP', data: { foo: 'bar' } } }
   )
   expect(options.onSave).toHaveBeenNthCalledWith(
     2,
-    { A: { type: 'STORE_STEP', data: { foo: 'bar' } }, B: { type: 'STORE_STEP', data: { hello: 'world' } } }
-  )
-  expect(options.onSave).toHaveBeenNthCalledWith(
-    3,
     { A: { type: 'STORE_STEP', data: { foo: 'bar' } }, B: { type: 'STORE_STEP', data: { hello: 'world' } } }
   )
 })
