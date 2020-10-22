@@ -4,11 +4,11 @@
 [![npm](https://img.shields.io/npm/v/piggle.svg)](https://www.npmjs.com/package/piggle)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-Define long-running tasks as javascript generator functions.  Ensure there's a yield after each important change.
+Define long-running operations as javascript generator functions.  Ensure there's a yield after each important change.
 
-Piggle will then execute those tasks ensuring that any transitory failures are retries automatically.
+Piggle will then execute those operations ensuring that any steps that experience transitory failures are retried.  You can set the strategy for this.
 
-If the long-running task cannot be completed then it will output the current progress as an object.  You can store this object in a database, and you can pass this object back to Piggle to have it resume the task from wherever it left off.
+After each step in the operation an event emits an object that represents the current state of the operation.  You can (and should) save this in a database.  Ultimately, if the operation cannot be completed, the existing progress will be saved and can be resumed by passing the current state when re-launching the operation.
 
 There's a good piggle!
 
@@ -31,4 +31,5 @@ npm test
 ## Continuous Integration and Deployment
 
 Any pushes or pull-requests on non-master branches will trigger the test runner.
+
 Any pushes to master will cause the library to be re-published.
