@@ -1,6 +1,5 @@
-import { CALL_STEP, WAIT_STEP, STORE_STEP, LOG_STEP } from '../yields'
 import { invokeOnLog, invokeOnSave } from '../utils/index.js'
-import { executeCallStep, executeLogStep, executeStoreStep, executeWaitStep } from '../steps/index.js'
+import { getExecutorForStepType } from './getExecutorForStepType'
 
 /**
  * @callback OperationFunction
@@ -18,16 +17,6 @@ import { executeCallStep, executeLogStep, executeStoreStep, executeWaitStep } fr
  * @property {import('./invokeOnSave.js').OnLogCallback} [onLog] Raised whenever a log message is generated, either by the framework or by an operation log step.
  * Implementors should typically cache this information and wait for the next save event.
  */
-
-function getExecutorForStepType (step) {
-  switch (step.type) {
-    case CALL_STEP: return executeCallStep
-    case STORE_STEP: return executeStoreStep
-    case LOG_STEP: return executeLogStep
-    case WAIT_STEP: return executeWaitStep
-    default: throw new Error(`Object yielded from operation did not have a recognised type property.\n${JSON.stringify(step)}`)
-  }
-}
 
 /**
  * Executes the operation and returns a status code to indicate the result.

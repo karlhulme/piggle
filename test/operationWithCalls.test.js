@@ -1,6 +1,8 @@
 import { expect, jest, test } from '@jest/globals'
 import { executeOperation, call, TransitoryError } from '../index.js'
 
+class CustomTransitoryError extends TransitoryError {}
+
 function addPromise (a, b) {
   return new Promise((resolve, reject) => {
     resolve(a + b)
@@ -25,7 +27,7 @@ function createFlakeyPromise (attempts, callback, result) {
       if (result) {
         resolve('done')
       } else {
-        reject(new TransitoryError('failed'))
+        reject(new CustomTransitoryError('failed'))
       }
     })
   }
