@@ -1,5 +1,5 @@
 import { invokeOnLog, invokeOnSave } from '../utils/index.js'
-import { getExecutorForStepType } from './getExecutorForStepType'
+import { getExecutorForStepType } from './getExecutorForStepType.js'
 
 /**
  * @callback OperationFunction

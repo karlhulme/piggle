@@ -1,5 +1,5 @@
 import { TransitoryError } from '../errors/index.js'
-import { pause } from './pause'
+import { pause } from './pause.js'
 
 /**
  * Returns the result of resolving the given promise function.  The function will be called at least

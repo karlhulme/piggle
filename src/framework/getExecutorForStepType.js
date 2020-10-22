@@ -1,4 +1,4 @@
-import { CALL_STEP, WAIT_STEP, STORE_STEP, LOG_STEP } from '../yields'
+import { CALL_STEP, WAIT_STEP, STORE_STEP, LOG_STEP } from '../yields/index.js'
 import { executeCallStep, executeLogStep, executeStoreStep, executeWaitStep } from '../steps/index.js'
 
 /**
