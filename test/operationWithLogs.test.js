@@ -1,5 +1,5 @@
 import { expect, jest, test } from '@jest/globals'
-import { executeOperation, log } from '../index.js'
+import { executeOperation, log } from '../src/index.js'
 
 test('An operation emits logs via the onLog callback.', async () => {
   const operation = function * (input, output) {

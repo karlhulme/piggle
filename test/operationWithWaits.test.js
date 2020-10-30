@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals'
-import { executeOperation, wait } from '../index.js'
+import { executeOperation, wait } from '../src/index.js'
 
 test('An operation with waits will complete successfully.', async () => {
   const operation = function * (input, output) {

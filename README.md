@@ -12,7 +12,11 @@ After each step in the operation an event emits an object that represents the cu
 
 There's a good piggle!
 
-## installation
+## Example
+
+Feels like an example would be helpful here.
+
+## Installation
 
 ```bash
 npm install piggle
@@ -20,12 +24,32 @@ npm install piggle
 
 ## Development
 
-Code base adheres to the rules chosen by https://standardjs.com/.  Code is formatted with 2 spaces.
+Code written in Typescript.
 
-Tests are written using Jest with 100% coverage.
+## Types
 
-```javascript
+The type declarations are produced by the typescript compiler `tsc`.  This configured via the `tsconfig.json` file.  Output is written to the `/types` folder.
+
+```bash
+npm run types
+```
+
+## Testing
+
+Tests are written using the `Jest` framework.  100% coverage is required.
+
+The `jest.transform` key (in `package.json`) instructs Jest to run all input files through babel before attempting to read the files.  Babel transpiles the files into es5.
+
+```bash
 npm test
+```
+
+## Build
+
+`Rollup` is used to pass a series of configurations to babel with a view to producing cjs and esm modules.
+
+```bash
+npm run build
 ```
 
 ## Continuous Integration and Deployment

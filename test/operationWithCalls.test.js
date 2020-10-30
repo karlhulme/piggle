@@ -1,5 +1,5 @@
 import { expect, jest, test } from '@jest/globals'
-import { executeOperation, call, TransitoryError } from '../index.js'
+import { executeOperation, call, TransitoryError } from '../src/index.js'
 
 class CustomTransitoryError extends TransitoryError {}
 

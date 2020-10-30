@@ -3,10 +3,13 @@
   "version": "1.3.4",
   "description": "A library for processing generator javascript functions with automatic retries on transitory failures.",
   "type": "module",
-  "main": "./index.js",
-  "exports": "./index.js",
+  "main": "./dist/lib/piggle.js",
+  "exports": "./dist/es/piggle.js",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
-    "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js && standard",
+    "test": "jest",
+    "types": "tsc",
+    "build": "rollup -c",
     "reinstall": "rm -rf node_modules && npm install"
   },
   "repository": {
@@ -21,8 +24,13 @@
   "homepage": "https://github.com/karlhulme/piggle#readme",
   "dependencies": {},
   "devDependencies": {
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-typescript": "^7.12.1",
     "jest": "^26.4.2",
-    "standard": "^14.3.4"
+    "rollup": "^2.32.1",
+    "typescript": "^4.0.5"
   },
   "jest": {
     "collectCoverage": true,
@@ -35,6 +43,8 @@
       }
     },
     "testEnvironment": "node",
-    "transform": {}
+    "transform": {
+      "\\.[jt]sx?$": "babel-jest"
+    }
   }
 }
