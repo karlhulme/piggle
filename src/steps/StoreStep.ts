@@ -11,7 +11,7 @@ export class StoreStep implements Step {
    * @param key The name of the state property used to store the given value.
    * @param value The value to be stored. 
    */
-  constructor (readonly key: string, readonly value: any) {}
+  constructor (readonly key: string, readonly value: unknown) {}
 
   /**
    * Executes the step.

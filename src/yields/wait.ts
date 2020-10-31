@@ -5,6 +5,6 @@ import { WaitStep } from '../steps'
  * This is used to pause an operation.
  * @param {Number} milliseconds A number of milliseconds to wait.
  */
-export function wait (milliseconds: number) {
+export function wait (milliseconds: number): WaitStep {
   return new WaitStep(milliseconds)
 }

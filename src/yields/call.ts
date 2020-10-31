@@ -13,6 +13,6 @@ import { CallStepOptions } from '../steps'
  * resolves to a value to be saved in the state.
  * @param options A set of call step options.
  */
-export function call (key: string, callFunc: CallFunc, options?: CallStepOptions) {
+export function call (key: string, callFunc: CallFunc, options?: CallStepOptions): CallStep {
   return new CallStep(key, callFunc, options || {})
 }

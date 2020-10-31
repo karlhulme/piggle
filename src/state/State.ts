@@ -2,7 +2,7 @@
  * Represents the value of a state property. 
  */
 interface StatePropertyValue {
-  value: any
+  value: unknown
 }
 
 /**

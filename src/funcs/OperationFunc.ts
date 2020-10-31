@@ -8,4 +8,4 @@ import { Step } from '../steps'
  * @param state The current state of the operation, or null if the
  * operation is being started for the first time.
  */
-export type OperationFunc = (input: any, state: State | null) => Generator<Step, void, void>
+export type OperationFunc = (input: unknown, state: State | null) => Generator<Step, void, void>

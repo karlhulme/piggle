@@ -8,7 +8,7 @@ import { State } from '../state'
  * @param onSave A function for saving the current state of an operation.
  */
 export function createSafeOnSave (onSave?: SaveFunc | null) {
-  return async function (state: State) {
+  return async function (state: State): Promise<void> {
     if (onSave) {
       try {
         await onSave(state)

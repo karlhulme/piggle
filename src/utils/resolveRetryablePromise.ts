@@ -2,6 +2,13 @@ import { CallFunc } from '../funcs'
 import { pause } from './pause'
 
 /**
+ * Represents an array of constructors that create types extending
+ * the Error class.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ArrayOfErrorTypes = Array<new (...args: any[]) => Error>
+
+/**
  * Returns the result of resolving the callFunc function.  The function will be called at least
  * once, plus an additional attempt each time a transitory error is returned upto the number
  * of elements in the retryIntervalsInMilliseconds array.
@@ -10,7 +17,7 @@ import { pause } from './pause'
  * @param retryIntervalsInMilliseconds An array of numbers where each element represents the delay
  * in milliseconds before the promise function is retried after a transient failure.
  */
-export async function resolveRetryablePromise (callFunc: CallFunc, transientErrorTypes: Array<new (...args: any) => Error>, retryIntervalsInMilliseconds: number[]) {
+export async function resolveRetryablePromise (callFunc: CallFunc, transientErrorTypes: ArrayOfErrorTypes, retryIntervalsInMilliseconds: number[]): Promise<unknown> {
   let lastError = null
 
   for (let i = 0; i <= retryIntervalsInMilliseconds.length; i++) {

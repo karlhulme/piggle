@@ -13,7 +13,7 @@ import { OperationOptions } from './OperationOptions'
  * @param input The payload to be passed to the generator function as input
  * @param options The options for executing the operation.
  */
-export async function executeOperation (operationFunc: OperationFunc, input?: any, options?: OperationOptions): Promise<boolean> {
+export async function executeOperation (operationFunc: OperationFunc, input?: unknown, options?: OperationOptions): Promise<boolean> {
   let state = options ? options.state || {} : {}
   const onLog = createSafeOnLog(options ? options.onLog : undefined)
   const onSave = createSafeOnSave(options ? options.onSave : undefined)

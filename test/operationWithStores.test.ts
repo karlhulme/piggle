@@ -8,6 +8,7 @@ test('An operation with stores will complete successfully.', async () => {
   }
 
   const options = {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onSave: jest.fn(async () => {})
   }
 

@@ -6,7 +6,7 @@ import { LogFunc } from '../funcs'
  * @param onLog A function for adding a message to a log.
  */
 export function createSafeOnLog (onLog?: LogFunc | null) {
-  return function (message: string) {
+  return function (message: string): void {
     if (onLog) {
       try {
         onLog(message)

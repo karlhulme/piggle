@@ -5,6 +5,6 @@ import { LogStep } from '../steps'
  * This is used to add a message to the log.
  * @param message A message.
  */
-export function log (message: string) {
+export function log (message: string): LogStep {
   return new LogStep(message)
 }

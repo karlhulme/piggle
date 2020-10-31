@@ -6,6 +6,6 @@ import { StoreStep } from '../steps'
  * @param key The name of a store step.
  * @param value Any serializable value.
  */
-export function store (key: string, value: any) {
+export function store (key: string, value: unknown): StoreStep {
   return new StoreStep(key, value)
 }

@@ -39,6 +39,7 @@ test('An operation with a call to a promise completes successfully and saves the
   }
 
   const options = {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onSave: jest.fn(async () => {})
   }
 
@@ -56,6 +57,7 @@ test('An operation with a call to a failing promise does not complete.', async (
   }
 
   const options = {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onSave: jest.fn(async () => {})
   }
 
@@ -71,6 +73,7 @@ test('An operation with calls to a promise that throws transient errors will sti
   }
 
   const options = {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onSave: jest.fn(async () => {})
   }
 
@@ -96,6 +99,7 @@ test('An operation with calls to a promise that throws more transient errors tha
   }
 
   const options = {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onSave: jest.fn(async () => {})
   }
 
