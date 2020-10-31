@@ -2,14 +2,11 @@
   "name": "piggle",
   "version": "2.2.2",
   "description": "A library for processing generator javascript functions with automatic retries on transitory failures.",
-  "type": "module",
   "main": "./dist/lib/piggle.js",
   "module": "./dist/es/piggle.js",
-  "exports": "./dist/es/piggle.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
-    "src",
     "types"
   ],
   "scripts": {
@@ -55,9 +52,6 @@
         "statements": 0
       }
     },
-    "testEnvironment": "node",
-    "transform": {
-      "\\.[jt]sx?$": "babel-jest"
-    }
+    "testEnvironment": "node"
   }
 }
