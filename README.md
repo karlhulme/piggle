@@ -1,20 +1,58 @@
 # Piggle
 
+A simple framework for ensuring long running and fragile (e.g. network reliant) operations are run to completion with each step performed exactly once.
+
 ![](https://github.com/karlhulme/piggle/workflows/CD/badge.svg)
 [![npm](https://img.shields.io/npm/v/piggle.svg)](https://www.npmjs.com/package/piggle)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-Define long-running operations as javascript generator functions.  Ensure there's a yield after each important change.
+Define a long-running operation as a javascript generator function, yielding after each creation or update of an external resource.  This provides a hook so that progress can be saved to a database as the operation proceeds.
 
-Piggle will then execute those operations ensuring that any steps that experience transitory failures are retried.  You can set the strategy for this.
+Piggle will automatically retry any failed steps with an exponential backoff strategy.  If you wish, you can configure the strategy and define which errors should be treated as transitory.
 
-After each step in the operation an event emits an object that represents the current state of the operation.  You can (and should) save this in a database.  Ultimately, if the operation cannot be completed, the existing progress will be saved and can be resumed by passing the current state when re-launching the operation.
+Piggle can resume a failed operation from the point of failure.
 
 There's a good piggle!
 
 ## Example
 
-Feels like an example would be helpful here.
+A typical usage for piggle is where you need to update multiple external resources in sequence and there is no transaction mechanism for just rolling back.
+
+In this example below, functions `callExternalResourceOne` and `callExternalResourceTwo` are async functions that call a webservice and return the new id
+
+```javascript
+import { call, log, store, wait, executeOperation } from 'piggle'
+
+function * myOperation (input, state) {
+  // create the first external resource
+  yield call('resourceOne', () => callExternalResourceOne(input.x))
+
+  // other steps you can use
+  yield log('pausing for 2 seconds')
+  yield wait(2000)
+  yield store('result', { foo: 'bar' })
+
+  // create the second resource using data from the first
+  yield call('resourceTwo', () => callExternalResourceTwo(state.resoureOne.value))
+}
+
+async function run () {
+  // call the long-running operation from the beginning
+  await executeOperation(myOperation, { x: 11111 }, {
+    onSave: async state => { /* save the state to a database */ },
+    onLog: message => console.log(message)
+  })
+
+  // call the long-running operation from after the creation of the first resource
+  await executeOperation(myOperation, { x: 11111 }, {
+    onSave: async state => { /* save the state to a database */ },
+    onLog: message => console.log(message),
+    state: {
+      resourceOne: { value: 12345 }
+    }
+  })
+}
+```
 
 ## Installation
 
@@ -28,7 +66,7 @@ Code written in Typescript.
 
 ## Types
 
-The type declarations are produced by the typescript compiler `tsc`.  This configured via the `tsconfig.json` file.  Output is written to the `/types` folder.
+The type declarations are produced by the typescript compiler `tsc`.  This is configured via the `tsconfig.json` file.  Output is written to the `/dist/types` folder.
 
 ```bash
 npm run types
@@ -46,7 +84,11 @@ npm test
 
 ## Build
 
-`Rollup` is used to pass a series of configurations to babel with a view to producing cjs and esm modules.
+`Rollup` is used to pass a series of configurations to babel with a view to producing the output modules.
+
+The CommonJS module is written to `/dist/lib`.
+
+The ES module is written to `/dist/es`.
 
 ```bash
 npm run build

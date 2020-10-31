@@ -1,7 +1,10 @@
+import nodeResolve from '@rollup/plugin-node-resolve'
 import babel from '@rollup/plugin-babel'
 
+const extensions = ['.js', '.ts']
+
 export default {
-  input: './src/index.js',
+  input: './src/index.ts',
   output: [{
     file: './dist/lib/piggle.js',
     format: 'cjs'
@@ -9,8 +12,13 @@ export default {
     file: './dist/es/piggle.js',
     format: 'es'
   }],
-  plugins: [babel({
-    babelHelpers: 'bundled',
-    extensions: ['.js', '.ts']
-  })]
+  plugins: [
+    nodeResolve({
+      extensions,
+    }),
+    babel({
+      babelHelpers: 'bundled',
+      extensions
+    }
+  )]
 }
