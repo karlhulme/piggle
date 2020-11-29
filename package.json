@@ -2,23 +2,15 @@
   "name": "piggle",
   "version": "2.4.0",
   "description": "A library for processing generator javascript functions with automatic retries on transitory failures.",
-  "type": "module",
-  "main": "./dist/es/piggle.js",
-  "module": "./dist/es/piggle.js",
-  "exports": {
-    "require": "./dist/lib/piggle.js",
-    "import": "./dist/es/piggle.js"
-  },
-  "types": "./dist/types/index.d.ts",
+  "main": "./lib/index.js",
+  "types": "./types/index.d.ts",
   "files": [
-    "dist",
+    "lib",
     "types"
   ],
   "scripts": {
-    "clean": "rm -rf dist",
     "test": "jest && eslint '*/**/*.{js,ts}'",
-    "types": "tsc",
-    "build": "rollup -c",
+    "build": "rm -rf types && rm -rf lib && tsc --target es5 --downlevelIteration true",
     "reinstall": "rm -rf node_modules && npm install"
   },
   "repository": {
@@ -33,21 +25,16 @@
   "homepage": "https://github.com/karlhulme/piggle#readme",
   "dependencies": {},
   "devDependencies": {
-    "@babel/cli": "^7.12.1",
-    "@babel/core": "^7.12.3",
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/preset-env": "^7.12.1",
-    "@babel/preset-typescript": "^7.12.1",
-    "@rollup/plugin-babel": "^5.2.1",
-    "@rollup/plugin-node-resolve": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
     "eslint": "^7.12.1",
     "jest": "^26.4.2",
+    "ts-jest": "^26.4.4",
     "rollup": "^2.32.1",
     "typescript": "^4.0.5"
   },
   "jest": {
+    "preset": "ts-jest",
     "collectCoverage": true,
     "coverageThreshold": {
       "global": {
