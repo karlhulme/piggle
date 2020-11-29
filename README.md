@@ -64,14 +64,6 @@ npm install piggle
 
 Code written in Typescript.
 
-## Types
-
-The type declarations are produced by the typescript compiler `tsc`.  This is configured via the `tsconfig.json` file.  Output is written to the `/dist/types` folder.
-
-```bash
-npm run types
-```
-
 ## Testing
 
 Tests are written using the `Jest` framework.  100% coverage is required.
@@ -84,11 +76,9 @@ npm test
 
 ## Build
 
-`Rollup` is used to pass a series of configurations to babel with a view to producing the output modules.
+Type declarations are produced by the typescript compiler `tsc`.  This is configured via the `tsconfig.json` file.  Output is written to the `/types` folder and included in the published npm package.
 
-The CommonJS module is written to `/dist/lib`.
-
-The ES module is written to `/dist/es`.
+A CommonJS lib is produced in the `/lib` folder, transpiled down to es5 syntax.
 
 ```bash
 npm run build
