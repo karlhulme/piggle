@@ -4,12 +4,6 @@
 # test coverage produced by Istanbul (Jest)
 coverage
 
-# distribution directory for libs and types
-dist
-
-# jsl download files
-download
-
 # the lib files to be published
 lib
 
