@@ -68,8 +68,6 @@ Code written in Typescript.
 
 Tests are written using the `Jest` framework.  100% coverage is required.
 
-The `jest.transform` key (in `package.json`) instructs Jest to run all input files through babel before attempting to read the files.  Babel transpiles the files into es5.
-
 ```bash
 npm test
 ```
