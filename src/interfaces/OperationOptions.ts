@@ -1,5 +1,6 @@
-import { SaveFunc, LogFunc } from '../funcs'
-import { State } from '../state'
+import { SaveFunc } from './SaveFunc'
+import { LogFunc } from './LogFunc'
+import { State } from './State'
 
 /**
  * A set of options to be used to processing an operation.

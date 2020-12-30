@@ -1,7 +1,5 @@
-
-import { CallFunc } from '../funcs'
-import { CallStep } from '../steps'
-import { CallStepOptions } from '../steps'
+import { CallFunc } from '../interfaces'
+import { CallStep, CallStepOptions } from '../steps'
 
 /**
  * Creates a call step object that can be yielded during an operation.

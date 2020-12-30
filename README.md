@@ -4,7 +4,6 @@ A simple framework for ensuring long running and fragile (e.g. network reliant) 
 
 ![](https://github.com/karlhulme/piggle/workflows/CD/badge.svg)
 [![npm](https://img.shields.io/npm/v/piggle.svg)](https://www.npmjs.com/package/piggle)
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 Define a long-running operation as a javascript generator function, yielding after each creation or update of an external resource.  This provides a hook so that progress can be saved to a database as the operation proceeds.
 
@@ -76,7 +75,7 @@ npm test
 
 Type declarations are produced by the typescript compiler `tsc`.  This is configured via the `tsconfig.json` file.  Output is written to the `/types` folder and included in the published npm package.
 
-A CommonJS lib is produced in the `/lib` folder, transpiled down to es5 syntax.
+A CommonJS lib is produced in the `/lib` folder.
 
 ```bash
 npm run build

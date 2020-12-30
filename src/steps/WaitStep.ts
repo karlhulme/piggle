@@ -1,7 +1,5 @@
-import { State } from '../state'
-import { LogFunc } from '../funcs'
+import { LogFunc, State, Step } from '../interfaces'
 import { pause } from '../utils'
-import { Step } from './Step'
 
 /**
  * A step that pauses execution for a period of time.

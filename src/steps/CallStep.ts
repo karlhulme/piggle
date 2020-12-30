@@ -1,7 +1,5 @@
-import { State } from '../state'
-import { CallFunc, LogFunc } from '../funcs'
+import { CallFunc, LogFunc, State, Step } from '../interfaces'
 import { resolveRetryablePromise } from '../utils'
-import { Step } from './Step'
 import { CallStepOptions } from './CallStepOptions'
 import { TransitoryError } from '../errors'
 

@@ -1,4 +1,4 @@
-import { CallFunc } from '../funcs'
+import { CallFunc } from '../interfaces'
 import { pause } from './pause'
 
 /**

@@ -1,5 +1,5 @@
-import { State } from '../state'
-import { LogFunc } from '../funcs'
+import { State } from './State'
+import { LogFunc } from './LogFunc'
 
 /**
  * Defines the methods that a Step must implement.

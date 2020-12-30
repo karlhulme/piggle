@@ -1,6 +1,5 @@
 import { SaveCallbackError } from '../errors'
-import { SaveFunc } from '../funcs'
-import { State } from '../state'
+import { SaveFunc, State } from '../interfaces'
 
 /**
  * Returns an onSave function that handles missing or erroring

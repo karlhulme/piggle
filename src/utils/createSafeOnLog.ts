@@ -1,4 +1,4 @@
-import { LogFunc } from '../funcs'
+import { LogFunc } from '../interfaces'
 
 /**
  * Returns an onLog function that handles missing or erroring

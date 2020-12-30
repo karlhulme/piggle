@@ -1,6 +1,4 @@
-import { State } from '../state'
-import { LogFunc } from '../funcs'
-import { Step } from './Step'
+import { LogFunc, State, Step } from '../interfaces'
 
 /**
  * A step that stores a value in the state object.

@@ -1,6 +1,5 @@
-import { OperationFunc } from '../funcs'
+import { OperationFunc, OperationOptions } from '../interfaces'
 import { createSafeOnLog, createSafeOnSave } from '../utils'
-import { OperationOptions } from './OperationOptions'
 
 /**
  * Executes the operation and returns a status code to indicate the result.

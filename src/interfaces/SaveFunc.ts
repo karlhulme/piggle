@@ -1,4 +1,4 @@
-import { State } from "../state"
+import { State } from "./State"
 
 /**
  * Describes the signature of a function for saving the current state.

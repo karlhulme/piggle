@@ -1,5 +1,5 @@
-import { State } from '../state'
-import { Step } from '../steps'
+import { State } from './state'
+import { Step } from './step'
 
 /**
  * Describes the signature of a long-running operation that typically
