@@ -5,5 +5,5 @@ test('An empty operation completes successfully.', async () => {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   const emptyOperation = function * () {}
 
-  await expect(executeOperation(emptyOperation)).resolves.toEqual(true)
+  await expect(executeOperation(emptyOperation, null)).resolves.toEqual(true)
 })

@@ -7,7 +7,7 @@ test('An operation with waits will complete successfully.', async () => {
   }
 
   const start = process.hrtime()
-  await expect(executeOperation(operation)).resolves.toEqual(true)
+  await expect(executeOperation(operation, null)).resolves.toEqual(true)
   const duration = process.hrtime(start)
   expect(duration[0]).toBeGreaterThanOrEqual(1)
 })
