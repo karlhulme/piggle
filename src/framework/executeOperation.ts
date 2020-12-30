@@ -9,17 +9,21 @@ import { createSafeOnLog, createSafeOnSave } from '../utils'
  * The return value of a promise provided to a `call` step will be written to the output object as data.
  * For this reason operations should not expect to capture anything from the return value of a yield expression.
  * @param operationFunc A generator function.
- * @param input The payload to be passed to the generator function as input
+ * @param props The payload to be passed to the generator function.
  * @param options The options for executing the operation.
  */
-export async function executeOperation (operationFunc: OperationFunc, input?: unknown, options?: OperationOptions): Promise<boolean> {
+export async function executeOperation<OperationPropsType> (operationFunc: OperationFunc<OperationPropsType>, props: OperationPropsType, options?: OperationOptions): Promise<boolean> {
   let state = options ? options.state || {} : {}
   const onLog = createSafeOnLog(options ? options.onLog : undefined)
   const onSave = createSafeOnSave(options ? options.onSave : undefined)
 
   try {
     onLog('Operation started.')
-    const operation = operationFunc(input, state)
+    const operation = operationFunc(props, {
+      getValue: function (stepName: string): unknown {
+        return state[stepName] ? state[stepName].value : undefined
+      }
+    })
 
     for (const step of operation) {
       const newState = await step.execute(state, onLog)

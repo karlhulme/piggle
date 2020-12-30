@@ -1,10 +1,13 @@
 import { expect, jest, test } from '@jest/globals'
 import { executeOperation, store } from '../src'
+import { OperationManager } from '../src/interfaces/OperationManager'
 
 test('An operation with stores will complete successfully.', async () => {
-  const operation = function * () {
+  const operation = function * (props: unknown, mgr: OperationManager) {
     yield store('A', { foo: 'bar' })
     yield store('B', { hello: 'world' })
+    expect(mgr.getValue('A')).toEqual({ foo: 'bar' })
+    expect(mgr.getValue('C')).toEqual(undefined)
   }
 
   const options = {
@@ -30,7 +33,7 @@ test('An operation with stores but no save will still complete successfully.', a
     yield store('B', { hello: 'world' })
   }
 
-  await expect(executeOperation(operation)).resolves.toEqual(true)
+  await expect(executeOperation(operation, null)).resolves.toEqual(true)
 })
 
 test('An operation will skip previously completed store steps.', async () => {

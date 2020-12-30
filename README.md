@@ -22,9 +22,9 @@ In this example below, functions `callExternalResourceOne` and `callExternalReso
 ```javascript
 import { call, log, store, wait, executeOperation } from 'piggle'
 
-function * myOperation (input, state) {
+function * myOperation (props, manager) {
   // create the first external resource
-  yield call('resourceOne', () => callExternalResourceOne(input.x))
+  yield call('resourceOne', () => callExternalResourceOne(props.x))
 
   // other steps you can use
   yield log('pausing for 2 seconds')
@@ -32,7 +32,7 @@ function * myOperation (input, state) {
   yield store('result', { foo: 'bar' })
 
   // create the second resource using data from the first
-  yield call('resourceTwo', () => callExternalResourceTwo(state.resoureOne.value))
+  yield call('resourceTwo', () => callExternalResourceTwo(manager.getValue('resourceOne'))
 }
 
 async function run () {
