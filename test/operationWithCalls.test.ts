@@ -9,6 +9,12 @@ function addPromise (a: number, b: number) {
   })
 }
 
+function emptyPromise () {
+  return new Promise<void>(resolve => {
+    resolve()
+  })
+}
+
 function failPromise () {
   return new Promise((resolve, reject) => {
     reject(new Error('fail'))
@@ -48,6 +54,25 @@ test('An operation with a call to a promise completes successfully and saves the
   expect(options.onSave).toHaveBeenNthCalledWith(
     1,
     { A: { value: 5 } }
+  )
+})
+
+
+test('An operation with a call to a promise that completes but without returning a result saves null into the state.', async () => {
+  const operation = function * () {
+    yield call('A', emptyPromise)
+  }
+
+  const options = {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onSave: jest.fn(async () => {})
+  }
+
+  await expect(executeOperation(operation, null, options)).resolves.toEqual(true)
+  expect(options.onSave).toHaveBeenCalledTimes(1)
+  expect(options.onSave).toHaveBeenNthCalledWith(
+    1,
+    { A: { value: null } }
   )
 })
 

@@ -27,6 +27,25 @@ test('An operation with stores will complete successfully.', async () => {
   )
 })
 
+test('An operation with stores can store an undefined as a null.', async () => {
+  const operation = function * (props: unknown, mgr: OperationManager) {
+    yield store('A', undefined)
+    expect(mgr.getValue('A')).toEqual(null)
+  }
+
+  const options = {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onSave: jest.fn(async () => {})
+  }
+
+  await expect(executeOperation(operation, null, options)).resolves.toEqual(true)
+  expect(options.onSave).toHaveBeenCalledTimes(1)
+  expect(options.onSave).toHaveBeenNthCalledWith(
+    1,
+    { A: { value: null } }
+  )
+})
+
 test('An operation with stores but no save will still complete successfully.', async () => {
   const operation = function * () {
     yield store('A', { foo: 'bar' })

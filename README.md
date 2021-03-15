@@ -17,7 +17,7 @@ There's a good piggle!
 
 A typical usage for piggle is where you need to update multiple external resources in sequence and there is no transaction mechanism for just rolling back.
 
-In this example below, functions `callExternalResourceOne` and `callExternalResourceTwo` are async functions that call a webservice and return the new id
+In this example below, functions `callExternalResourceOne` and `callExternalResourceTwo` are async functions that call a webservice. 
 
 ```javascript
 import { call, log, store, wait, executeOperation } from 'piggle'
@@ -52,6 +52,9 @@ async function run () {
   })
 }
 ```
+
+If the async functions used with `yield call` return data, then it will be serialized and stored in the state.  This data can be accessed from other steps using `manager.getValue(stepName)`.  An `OperationManager` is passed as the second positional argument to each operation.  If an async function does not return a value, then `null` will be stored instead.
+
 
 ## Installation
 

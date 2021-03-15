@@ -23,7 +23,7 @@ export class StoreStep implements Step {
       return {
         ...state,
         [this.key]: {
-          value: this.value
+          value: typeof this.value === 'undefined' ? null : this.value
         }
       }
     } else {

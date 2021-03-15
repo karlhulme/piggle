@@ -50,7 +50,7 @@ export class CallStep implements Step {
       return {
         ...state,
         [this.key]: {
-          value: data
+          value: typeof data === 'undefined' ? null : data
         }
       }
     } else {
