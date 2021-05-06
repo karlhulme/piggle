@@ -1,59 +1,41 @@
 # Piggle
 
-A simple framework for ensuring long running and fragile (e.g. network reliant) operations are run to completion with each step performed exactly once.
+A simple mechanism for executing fragile (e.g. network or database reliant) functions.
 
 ![](https://github.com/karlhulme/piggle/workflows/CD/badge.svg)
 [![npm](https://img.shields.io/npm/v/piggle.svg)](https://www.npmjs.com/package/piggle)
 
-Define a long-running operation as a javascript generator function, yielding after each creation or update of an external resource.  This provides a hook so that progress can be saved to a database as the operation proceeds.
+Define a long-running operation as an asynchronous javascript function.
 
-Piggle will automatically retry any failed steps with an exponential backoff strategy.  If you wish, you can configure the strategy and define which errors should be treated as transitory.
-
-Piggle can resume a failed operation from the point of failure.
+Piggle will automatically retry any transitory failures using exponential backoff strategy.  The errors considered transitory and the backoff strategy can be configured.
 
 There's a good piggle!
 
 ## Example
 
-A typical usage for piggle is where you need to update multiple external resources in sequence and there is no transaction mechanism for just rolling back.
+A typical usage for piggle is where you need to update multiple external resources in sequence and there is no transaction mechanism for just rolling back.  An auto retry strategy can greatly increase the chance of success.
 
 In this example below, functions `callExternalResourceOne` and `callExternalResourceTwo` are async functions that call a webservice. 
 
 ```javascript
-import { call, log, store, wait, executeOperation } from 'piggle'
+import { retryable } from 'piggle'
+import { setValueOnService, SomeNetworkError } from 'external-service'
+import { setValueAtDatabase, SomeDatabaseError } from 'external-database'
 
-function * myOperation (props, manager) {
-  // create the first external resource
-  yield call('resourceOne', () => callExternalResourceOne(props.x))
-
-  // other steps you can use
-  yield log('pausing for 2 seconds')
-  yield wait(2000)
-  yield store('result', { foo: 'bar' })
-
-  // create the second resource using data from the first
-  yield call('resourceTwo', () => callExternalResourceTwo(manager.getValue('resourceOne'))
+async function doWork (newValue: string): Promise<void> {
+  await setValueOnService(newValue)
+  await setValueAtDatabase(newValue)
 }
 
-async function run () {
-  // call the long-running operation from the beginning
-  await executeOperation(myOperation, { x: 11111 }, {
-    onSave: async state => { /* save the state to a database */ },
-    onLog: message => console.log(message)
-  })
+// retry using the defaults
+await retryable(doWork)
 
-  // call the long-running operation from after the creation of the first resource
-  await executeOperation(myOperation, { x: 11111 }, {
-    onSave: async state => { /* save the state to a database */ },
-    onLog: message => console.log(message),
-    state: {
-      resourceOne: { value: 12345 }
-    }
-  })
-}
+// specifying the errors to treat as transient
+await retryable(doWork, { transientErrorTypes: [SomeNetworkError, SomeDatabaseError] })
+
+// specifying the number of retry attempts by specifying the intervals between attempts (in milliseconds)
+await retryable(doWork, { retryIntervalsInMilliseconds: [100, 200, 500] })
 ```
-
-If the async functions used with `yield call` return data, then it will be serialized and stored in the state.  This data can be accessed from other steps using `manager.getValue(stepName)`.  An `OperationManager` is passed as the second positional argument to each operation.  If an async function does not return a value, then `null` will be stored instead.
 
 
 ## Installation
