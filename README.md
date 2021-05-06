@@ -5,17 +5,15 @@ A simple mechanism for executing fragile (e.g. network or database reliant) func
 ![](https://github.com/karlhulme/piggle/workflows/CD/badge.svg)
 [![npm](https://img.shields.io/npm/v/piggle.svg)](https://www.npmjs.com/package/piggle)
 
-Define a long-running operation as an asynchronous javascript function.
+Define a long-running operation as an asynchronous javascript function.  Pass that function to piggle to execute.
 
-Piggle will automatically retry any transitory failures using exponential backoff strategy.  The errors considered transitory and the backoff strategy can be configured.
+Piggle will automatically retry the function if a transitory error is raised using an exponential backoff strategy.  The errors considered transitory and the backoff strategy can be configured.
 
 There's a good piggle!
 
 ## Example
 
-A typical usage for piggle is where you need to update multiple external resources in sequence and there is no transaction mechanism for just rolling back.  An auto retry strategy can greatly increase the chance of success.
-
-In this example below, functions `callExternalResourceOne` and `callExternalResourceTwo` are async functions that call a webservice. 
+In the example below, functions `setValueOnService` and `setValueAtDatabase` are async functions that call an external service and database respectively.  We know they could fail due to temporary issues, so we wrap the calls using the `retryable` function exported from `piggle`.
 
 ```javascript
 import { retryable } from 'piggle'
@@ -23,18 +21,12 @@ import { setValueOnService, SomeNetworkError } from 'external-service'
 import { setValueAtDatabase, SomeDatabaseError } from 'external-database'
 
 async function doWork (newValue: string): Promise<void> {
-  await setValueOnService(newValue)
-  await setValueAtDatabase(newValue)
+  const transientErrorTypes = { transientErrorTypes: [SomeNetworkError, SomeDatabaseError] }
+  const retryStrategy = [100, 200, 500]
+
+  await retryable(() => setValueOnService(newValue), transientErrorTypes, retryStrategy)
+  await retryable(() => setValueAtDatabase(newValue), transientErrorTypes, retryStrategy)
 }
-
-// retry using the defaults
-await retryable(doWork)
-
-// specifying the errors to treat as transient
-await retryable(doWork, { transientErrorTypes: [SomeNetworkError, SomeDatabaseError] })
-
-// specifying the number of retry attempts by specifying the intervals between attempts (in milliseconds)
-await retryable(doWork, { retryIntervalsInMilliseconds: [100, 200, 500] })
 ```
 
 
@@ -44,9 +36,11 @@ await retryable(doWork, { retryIntervalsInMilliseconds: [100, 200, 500] })
 npm install piggle
 ```
 
+
 ## Development
 
 Code written in Typescript.
+
 
 ## Testing
 
@@ -55,6 +49,7 @@ Tests are written using the `Jest` framework.  100% coverage is required.
 ```bash
 npm test
 ```
+
 
 ## Build
 
@@ -65,6 +60,7 @@ A CommonJS lib is produced in the `/lib` folder.
 ```bash
 npm run build
 ```
+
 
 ## Continuous Integration and Deployment
 
