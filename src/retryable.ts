@@ -17,7 +17,7 @@ const defaultRetryIntervalsInMilliseconds = [100, 250, 500, 1000, 2000, 4000, 80
 /**
  * Represents the options that can be passed to the retryable function.
  */
-interface RetryableOptions {
+export interface RetryableOptions {
   /**
    * An array of error types that can be treated as transient.
    * If not specified, the default is TransitoryError.
