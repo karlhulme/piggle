@@ -1,6 +1,6 @@
+import { InterruptedError, TransitoryError } from '../errors'
 import { ArrayOfErrorTypes } from './ArrayOfErrorTypes'
 import { pause } from './pause'
-import { TransitoryError } from './TransitoryError'
 
 /**
  * By default we recognise the TransitoryError as the only retryable error.
@@ -30,16 +30,21 @@ export interface RetryableOptions {
    * in milliseconds before the promise function is retried after a transient failure.
    */
   retryIntervalsInMilliseconds?: number[]
+
+  /**
+   * A function that returns true if the operation should be interrupted.
+   */
+  interruptFunc?: () => boolean
 }
 
 /**
- * Returns the result of resolving the callFunc function.  The function will be called at least
+ * Returns the result of resolving the given function.  The function will be called at least
  * once, plus an additional attempt each time a transitory error is returned upto the number
  * of elements in the retryIntervalsInMilliseconds array.
- * @param func A function that returns a promise.
-
+ * @param operation A long-running function that returns a promise.
+ * @param options The options that control the retries.
  */
-export async function retryable<T> (func: () => Promise<T>, options?: RetryableOptions): Promise<T> {
+export async function retryable<T> (operation: () => Promise<T>, options?: RetryableOptions): Promise<T> {
   let lastError = null
   const retryIntervalsInMilliseconds = options?.retryIntervalsInMilliseconds || defaultRetryIntervalsInMilliseconds
   const transientErrorTypes = options?.transientErrorTypes || defaultTransientErrorTypes
@@ -52,7 +57,7 @@ export async function retryable<T> (func: () => Promise<T>, options?: RetryableO
     try {
       // We must await here and then return the data in a separate line,
       // otherwise any exception will be thrown in the context of the caller and not here.
-      const data = await func()
+      const data = await operation()
       return data
     } catch (err) {
       const isTransientError = transientErrorTypes.findIndex(errorType => err instanceof errorType) > -1
@@ -61,6 +66,10 @@ export async function retryable<T> (func: () => Promise<T>, options?: RetryableO
         lastError = err
       } else {
         throw err
+      }
+
+      if (options?.interruptFunc && options.interruptFunc()) {
+        throw new InterruptedError()
       }
     }
   }
