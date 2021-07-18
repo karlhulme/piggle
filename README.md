@@ -21,11 +21,24 @@ import { setValueOnService, SomeNetworkError } from 'external-service'
 import { setValueAtDatabase, SomeDatabaseError } from 'external-database'
 
 async function doWork (newValue: string): Promise<void> {
+  // You can indicate which errors should be treated as transitory, but generally you'll
+  // want to wrap any function call, check the specifics of the error, and if you're happy
+  // to retry then raise OperationTransitoryError.
   const transientErrorTypes = { transientErrorTypes: [SomeNetworkError, SomeDatabaseError] }
-  const retryStrategy = [100, 200, 500]
 
-  await retryable(() => setValueOnService(newValue), { transientErrorTypes, retryStrategy })
-  await retryable(() => setValueAtDatabase(newValue), { transientErrorTypes, retryStrategy })
+  // Each retry occurs after the given number of milliseconds, so the strategy below
+  // would indicate calling the operation once immediately, a second time after 100ms,
+  // a third after a further 200ms and a fourth and final time after a further 500ms.
+  const retryStrategy = [100, 200, 500]
+  
+  // An interrupt function shuold return true if the operation should be stopped.
+  // Typically this is used to stop operations because the host is trying to shutdown.
+  const interruptFunc = () => false
+
+  // The connected functins setValueOnService and setValueAtDatabase can then be called
+  // in sequence with a high chance of success because transitory errors will be bypassed.
+  await retryable(() => setValueOnService(newValue), { transientErrorTypes, retryStrategy, interruptFunc })
+  await retryable(() => setValueAtDatabase(newValue), { transientErrorTypes, retryStrategy, interruptFunc })
 }
 ```
 
