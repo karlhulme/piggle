@@ -1,2 +1,2 @@
-export * from './InterruptedError'
-export * from './TransitoryError'
+export * from './OperationInterruptedError'
+export * from './OperationTransitoryError'

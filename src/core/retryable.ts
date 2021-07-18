@@ -1,11 +1,11 @@
-import { InterruptedError, TransitoryError } from '../errors'
+import { OperationInterruptedError, OperationTransitoryError } from '../errors'
 import { ArrayOfErrorTypes } from './ArrayOfErrorTypes'
 import { pause } from './pause'
 
 /**
  * By default we recognise the TransitoryError as the only retryable error.
  */
-const defaultTransientErrorTypes: ArrayOfErrorTypes = [TransitoryError]
+const defaultTransientErrorTypes: ArrayOfErrorTypes = [OperationTransitoryError]
 
 /**
  * By default we retry the func 9 times (in addition to the original call)
@@ -69,7 +69,7 @@ export async function retryable<T> (operation: () => Promise<T>, options?: Retry
       }
 
       if (options?.interruptFunc && options.interruptFunc()) {
-        throw new InterruptedError()
+        throw new OperationInterruptedError()
       }
     }
   }

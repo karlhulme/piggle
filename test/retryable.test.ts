@@ -1,7 +1,7 @@
 import { expect, jest, test } from '@jest/globals'
-import { retryable, TransitoryError } from '../src'
+import { retryable, OperationTransitoryError, OperationInterruptedError } from '../src'
 
-class CustomTransitoryError extends TransitoryError {}
+class CustomTransitoryError extends OperationTransitoryError {}
 
 function createFlakeyPromise (failedAttempts: number, callback: () => unknown) {
   let index = -1
@@ -21,38 +21,47 @@ function createFlakeyPromise (failedAttempts: number, callback: () => unknown) {
   }
 }
 
-test('A promise that passes is executed once.', async () => {
-  const testPromise = jest.fn(async () => 123)
+test('An operation that passes is executed once.', async () => {
+  const testOp = jest.fn(async () => 123)
 
-  const result = await retryable(testPromise)
+  const result = await retryable(testOp)
   expect(result).toEqual(123)
 
-  expect(testPromise).toHaveBeenCalledTimes(1)
+  expect(testOp).toHaveBeenCalledTimes(1)
 })
 
-test('A promise that fails with a permanent error is executed once and raises the underlying error.', async () => {
-  const testPromise = jest.fn(async () => { throw new Error('FAIL') })
+test('An operation that fails with a permanent error is executed once and raises the underlying error.', async () => {
+  const testOp = jest.fn(async () => { throw new Error('FAIL') })
 
-  await expect(retryable(testPromise)).rejects.toThrowError('FAIL')
+  await expect(retryable(testOp)).rejects.toThrowError('FAIL')
 
-  expect(testPromise).toHaveBeenCalledTimes(1)
+  expect(testOp).toHaveBeenCalledTimes(1)
 })
 
-test('A promise that fails with transitory errors is re-tried and can succeed.', async () => {
-  const testPromise = jest.fn(() => 123)
-  const flakeyPromise = createFlakeyPromise(2, testPromise)
+test('An operation that fails with transitory errors is re-tried and can succeed.', async () => {
+  const testOp = jest.fn(() => 123)
+  const flakeyPromise = createFlakeyPromise(2, testOp)
 
   const result = await retryable(flakeyPromise)
   expect(result).toEqual(123)
 
-  expect(testPromise).toHaveBeenCalledTimes(3)
+  expect(testOp).toHaveBeenCalledTimes(3)
 })
 
-test('A promise that fails with transitory errors too many times results in failure.', async () => {
-  const testPromise = jest.fn(() => 123)
-  const flakeyPromise = createFlakeyPromise(3, testPromise)
+test('An operation that fails with transitory errors too many times results in failure.', async () => {
+  const testOp = jest.fn(() => 123)
+  const flakeyPromise = createFlakeyPromise(3, testOp)
 
   await expect(retryable(flakeyPromise, { retryIntervalsInMilliseconds: [100, 200]})).rejects.toThrow('TRANSITORY_FAIL')
 
-  expect(testPromise).toHaveBeenCalledTimes(3)
+  expect(testOp).toHaveBeenCalledTimes(3)
+})
+
+test('An operation that fails with transitory errors can be interrupted.', async () => {
+  const testOp = jest.fn(() => 123)
+  const flakeyPromise = createFlakeyPromise(2, testOp)
+
+  await expect(retryable(flakeyPromise, { interruptFunc: () => true })).rejects.toThrow(OperationInterruptedError)
+
+  expect(testOp).toHaveBeenCalledTimes(1)
 })

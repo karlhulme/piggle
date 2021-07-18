@@ -1,7 +1,7 @@
 /**
  * An error that is raised if an operation is interrupted.
  */
- export class InterruptedError extends Error {
+ export class OperationInterruptedError extends Error {
   /**
    * Constructs a new instance.
    */
