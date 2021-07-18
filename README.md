@@ -24,8 +24,8 @@ async function doWork (newValue: string): Promise<void> {
   const transientErrorTypes = { transientErrorTypes: [SomeNetworkError, SomeDatabaseError] }
   const retryStrategy = [100, 200, 500]
 
-  await retryable(() => setValueOnService(newValue), transientErrorTypes, retryStrategy)
-  await retryable(() => setValueAtDatabase(newValue), transientErrorTypes, retryStrategy)
+  await retryable(() => setValueOnService(newValue), { transientErrorTypes, retryStrategy })
+  await retryable(() => setValueAtDatabase(newValue), { transientErrorTypes, retryStrategy })
 }
 ```
 
