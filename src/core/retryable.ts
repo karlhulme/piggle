@@ -1,11 +1,5 @@
 import { OperationInterruptedError, OperationTransitoryError } from '../errors'
-import { ArrayOfErrorTypes } from './ArrayOfErrorTypes'
 import { pause } from './pause'
-
-/**
- * By default we recognise the TransitoryError as the only retryable error.
- */
-const defaultTransientErrorTypes: ArrayOfErrorTypes = [OperationTransitoryError]
 
 /**
  * By default we retry the func 9 times (in addition to the original call)
@@ -19,11 +13,13 @@ const defaultRetryIntervalsInMilliseconds = [100, 250, 500, 1000, 2000, 4000, 80
  */
 export interface RetryableOptions {
   /**
-   * An array of error types that can be treated as transient.
-   * If not specified, the default is TransitoryError.
-   * The test uses instanceof which matches to derived classes too. 
+   * A function that returns true if the given error is transient (temporary)
+   * and can be retried according to the retry strategy.  For errors that are
+   * permanent (or unrecognised) this function should return false.
+   * If this function is not supplied, then only errors derived from
+   * OperationTransitoryError will be treated as transient.
    */
-  transientErrorTypes?: ArrayOfErrorTypes
+  isErrorTransient?: (err: Error) => boolean
 
   /**
    * An array of numbers where each element represents the delay
@@ -32,9 +28,12 @@ export interface RetryableOptions {
   retryIntervalsInMilliseconds?: number[]
 
   /**
-   * A function that returns true if the operation should be interrupted.
+   * A function that returns true if an operation can continue processing.
+   * If the function returns false then the operation will stop.
+   * If this function is not supplied then operations will keep going until
+   * the retry strategy is exhausted.
    */
-  interruptFunc?: () => boolean
+  canContinueProcessing?: () => boolean
 }
 
 /**
@@ -47,11 +46,14 @@ export interface RetryableOptions {
 export async function retryable<T> (operation: () => Promise<T>, options?: RetryableOptions): Promise<T> {
   let lastError = null
   const retryIntervalsInMilliseconds = options?.retryIntervalsInMilliseconds || defaultRetryIntervalsInMilliseconds
-  const transientErrorTypes = options?.transientErrorTypes || defaultTransientErrorTypes
 
   for (let i = 0; i <= retryIntervalsInMilliseconds.length; i++) {
     if (i > 0) {
       await pause(retryIntervalsInMilliseconds[i - 1])
+    }
+
+    if (options?.canContinueProcessing && !options.canContinueProcessing()) {
+      throw new OperationInterruptedError()
     }
 
     try {
@@ -60,16 +62,12 @@ export async function retryable<T> (operation: () => Promise<T>, options?: Retry
       const data = await operation()
       return data
     } catch (err) {
-      const isTransientError = transientErrorTypes.findIndex(errorType => err instanceof errorType) > -1
+      const isTransientError = (err instanceof OperationTransitoryError) || (options?.isErrorTransient && options.isErrorTransient(err))
 
       if (isTransientError) {
         lastError = err
       } else {
         throw err
-      }
-
-      if (options?.interruptFunc && options.interruptFunc()) {
-        throw new OperationInterruptedError()
       }
     }
   }
