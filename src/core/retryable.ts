@@ -2,13 +2,11 @@ import { OperationInterruptedError, OperationTransitoryError } from '../errors'
 import { pause } from './pause'
 
 /**
- * By default we retry the func 9 times (in addition to the original call)
- * with an exponential backoff that increases from 100ms to 25s, over the course
- * of just over a minute.
- * Most hosting services will wait about 30 seconds for a container to 
- * shutdown so we don't wait to keep a process running too close to that cut-off.
+ * By default we retry the func 8 times (in addition to the original call)
+ * with an exponential backoff that increases from 100ms to 15s, over the course
+ * of just over half a minute.
  */
-const defaultRetryIntervalsInMilliseconds = [100, 250, 500, 1000, 2000, 4000, 8000, 15000, 25000]
+const defaultRetryIntervalsInMilliseconds = [100, 250, 500, 1000, 2000, 4000, 8000, 15000]
 
 /**
  * Represents the options that can be passed to the retryable function.
